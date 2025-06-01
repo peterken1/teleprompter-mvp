@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PromptPilot - Teleprompter MVP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html, body { height: 100%; }
+    #scriptText { white-space: pre-wrap; }
+  </style>
+</head>
+<body class="bg-white text-black transition-colors duration-300">
+  <div class="flex flex-col h-full">
+    <div class="p-4 bg-gray-100 dark:bg-gray-800 flex justify-between items-center">
+      <h1 class="text-xl font-bold">PromptPilot™</h1>
+      <button id="toggleTheme" class="px-3 py-1 bg-gray-300 dark:bg-gray-700 rounded">Toggle Theme</button>
+    </div>
+    <div class="p-4 flex flex-wrap gap-4 items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <textarea id="inputText" rows="4" class="w-full md:w-2/3 p-2 border rounded" placeholder="Paste or write your script here..."></textarea>
+      <div class="flex flex-wrap gap-2 items-center">
+        <button id="startBtn" class="bg-green-500 text-white px-4 py-2 rounded">Start</button>
+        <button id="pauseBtn" class="bg-yellow-400 text-white px-4 py-2 rounded">Pause</button>
+        <button id="resetBtn" class="bg-red-500 text-white px-4 py-2 rounded">Reset</button>
+        <label>Speed: <input id="speedControl" type="range" min="1" max="10" value="5" /></label>
+        <button id="fontUp" class="px-3 py-1 bg-blue-500 text-white rounded">A+</button>
+        <button id="fontDown" class="px-3 py-1 bg-blue-500 text-white rounded">A-</button>
+      </div>
+    </div>
+    <div id="displayArea" class="flex-1 overflow-y-auto p-6 text-xl leading-relaxed" style="font-size: 24px;">
+      <div id="scriptText"></div>
+    </div>
+  </div>
+  <script>
+    const inputText = document.getElementById("inputText");
+    const scriptText = document.getElementById("scriptText");
+    const displayArea = document.getElementById("displayArea");
+    const speedControl = document.getElementById("speedControl");
+    const toggleTheme = document.getElementById("toggleTheme");
+
+    let scrollInterval = null;
+    let fontSize = 24;
+
+    document.getElementById("startBtn").onclick = () => {
+      if (!inputText.value.trim()) return alert("Please enter a script first.");
+      scriptText.textContent = inputText.value;
+      if (scrollInterval) clearInterval(scrollInterval);
+      scrollInterval = setInterval(() => {
+        displayArea.scrollTop += 1;
+      }, 110 - speedControl.value * 10);
+    };
+
+    document.getElementById("pauseBtn").onclick = () => {
+      if (scrollInterval) clearInterval(scrollInterval);
+    };
+
+    document.getElementById("resetBtn").onclick = () => {
+      if (scrollInterval) clearInterval(scrollInterval);
+      displayArea.scrollTop = 0;
+    };
+
+    document.getElementById("fontUp").onclick = () => {
+      fontSize += 2;
+      displayArea.style.fontSize = fontSize + "px";
+    };
+
+    document.getElementById("fontDown").onclick = () => {
+      fontSize = Math.max(12, fontSize - 2);
+      displayArea.style.fontSize = fontSize + "px";
+    };
+
+    toggleTheme.onclick = () => {
+      document.body.classList.toggle("dark");
+      document.body.classList.toggle("bg-white");
+      document.body.classList.toggle("bg-gray-900");
+      document.body.classList.toggle("text-black");
+      document.body.classList.toggle("text-white");
+    };
+  </script>
+</body>
+</html>
